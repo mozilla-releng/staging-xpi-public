@@ -42,11 +42,10 @@ def test_tasks_from_manifest(config, tasks):
         task["treeherder"]["symbol"] = "T({})".format(
             xpi_config.get("treeherder-symbol", xpi_config["name"])
         )
-        if xpi_config.get("github_clone_secret"):
+        try:
             checkout_config['ssh_secret_name'] = config.graph_config["github_clone_secret"]
             artifact_prefix = "xpi/build"
-            task["worker"]["taskcluster-proxy"] = True
-        else:
+        except KeyError:
             artifact_prefix = "public/build"
         env["ARTIFACT_PREFIX"] = artifact_prefix
 

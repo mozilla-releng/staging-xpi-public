@@ -26,8 +26,8 @@ from voluptuous import (
     Any,
 )
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-ROOT = os.path.join(BASE_DIR, 'taskcluster', 'ci')
+
+BASE_DIR = os.getcwd()
 
 
 @memoize
