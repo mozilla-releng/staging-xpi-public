@@ -17,9 +17,10 @@ job-defaults:
         tier: 2
         platform: linux64/opt
     worker-type: b-linux
-    docker-image-index: index.xpi.xpi-manifest.cache.level-1.docker-images.v2.node-latest.latest
     worker:
         max-run-time: 7200
+        docker-image:
+            indexed: index.xpi.xpi-manifest.cache.level-1.docker-images.v2.node-latest.latest
     run:
         use-caches: false
 
