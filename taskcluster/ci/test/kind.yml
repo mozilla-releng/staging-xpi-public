@@ -22,7 +22,7 @@ job-template:
     worker-type: b-linux
     worker:
         docker-image:
-            indexed: index.xpi.xpi-manifest.cache.level-1.docker-images.v2.node-latest.latest
+            indexed: xpi.xpi-manifest.cache.level-1.docker-images.v2.node-latest.latest
         max-run-time: 7200
     run:
         using: run-task
