@@ -21,4 +21,5 @@ workers:
             os: linux
             worker-type: 'xpi-{level}-b-linux'
 
-github_clone_secret: project/xpi/xpi-github-clone-ssh
+# Uncomment if this is a private repo
+# github_clone_secret: project/xpi/xpi-github-clone-ssh
