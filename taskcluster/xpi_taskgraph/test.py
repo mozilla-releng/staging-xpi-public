@@ -17,27 +17,19 @@ from xpi_taskgraph.utils import get_manifest
 
 transforms = TransformSequence()
 
-
 test_count = {}
 
 
 @transforms.add
 def test_tasks_from_manifest(config, jobs):
     manifest = get_manifest()
-    for xpi_config in manifest:
-        if not xpi_config['tests']:
-            continue
-        for job in jobs:
+    for job in jobs:
+        for xpi_config in manifest:
+            xpi_name = xpi_config['name']
             for target in sorted(xpi_config['tests']):
                 task = deepcopy(job)
-                dep = task.pop("primary-dependency")
-                xpi_name = dep.task["extra"]["xpi-name"]
-                if xpi_config["name"] != xpi_name:
-                    continue
                 test_count.setdefault(xpi_name, 0)
                 test_count[xpi_name] += 1
-                task["attributes"] = dep.attributes.copy()
-                task["dependencies"] = {"build": dep.label}
                 task.setdefault("extra", {})["xpi-name"] = xpi_name
                 env = task.setdefault("worker", {}).setdefault("env", {})
                 run = task["run"]
@@ -47,7 +39,7 @@ def test_tasks_from_manifest(config, jobs):
                     run['cwd'] = '{checkout}'
                 run['command'] = run['command'].format(target=target)
                 task["label"] = "t-{}-{}".format(target, xpi_name)
-                task["treeherder"]["symbol"] = "T({}-1)".format(str(test_count[xpi_name]), xpi_name)
+                task["treeherder"]["symbol"] = "T({}-{})".format(str(test_count[xpi_name]), xpi_name)
                 try:
                     checkout_config['ssh_secret_name'] = config.graph_config["github_clone_secret"]
                     artifact_prefix = "xpi/build"
