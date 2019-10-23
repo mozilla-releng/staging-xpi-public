@@ -39,7 +39,7 @@ def get_manifest():
                 subdir_list.remove(dir_)
                 continue
         if 'package.json' in file_list:
-            manifest = {'name': os.path.basename(dir_name)}
+            manifest = {'name': os.path.basename(dir_name), 'tests': []}
             if 'yarn.lock' in file_list:
                 manifest['install-type'] = 'yarn'
             elif 'package-lock.json' in file_list:
@@ -52,8 +52,9 @@ def get_manifest():
                 manifest['directory'] = dir_name.replace("{}/".format(BASE_DIR), "")
             with open(os.path.join(dir_name, 'package.json')) as fh:
                 package_json = json.load(fh)
-            if 'test' in package_json.get('scripts', {}):
-                manifest['enable_test'] = True
+            for target in package_json.get('scripts', {}):
+                if target.startswith("test") or target.startswith("lint"):
+                    manifest['tests'].append(target)
             manifest_list.append(ReadOnlyDict(manifest))
     return tuple(manifest_list)
 

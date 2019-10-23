@@ -18,35 +18,40 @@ from xpi_taskgraph.utils import get_manifest
 transforms = TransformSequence()
 
 
-@transforms.add
-def test_tasks_from_manifest(config, tasks):
-    manifest = get_manifest()
-    for task in tasks:
-        dep = task.pop("primary-dependency")
-        task["attributes"] = dep.attributes.copy()
-        task["dependencies"] = {"build": dep.label}
-        xpi_name = dep.task["extra"]["xpi-name"]
-        task.setdefault("extra", {})["xpi-name"] = xpi_name
-        for xpi_config in manifest:
-            if xpi_config["name"] == xpi_name:
-                break
-        else:
-            raise Exception("Can't determine the upstream xpi_config for {}!".format(xpi_name))
-        env = task.setdefault("worker", {}).setdefault("env", {})
-        run = task.setdefault("run", {})
-        if 'directory' in xpi_config:
-            run['cwd'] = '{checkout}/%s' % xpi_config['directory']
-        else:
-            run['cwd'] = '{checkout}'
-        task["label"] = "test-{}".format(xpi_name)
-        task["treeherder"]["symbol"] = "T({})".format(
-            xpi_config.get("treeherder-symbol", xpi_config["name"])
-        )
-        try:
-            checkout_config['ssh_secret_name'] = config.graph_config["github_clone_secret"]
-            artifact_prefix = "xpi/build"
-        except KeyError:
-            artifact_prefix = "public/build"
-        env["ARTIFACT_PREFIX"] = artifact_prefix
+test_count = {}
 
-        yield task
+
+@transforms.add
+def test_tasks_from_manifest(config, jobs):
+    manifest = get_manifest()
+    for xpi_config in manifest:
+        if not xpi_config['tests']:
+            continue
+        for job in jobs:
+            for target in sorted(xpi_config['tests']):
+                task = deepcopy(job)
+                dep = task.pop("primary-dependency")
+                xpi_name = dep.task["extra"]["xpi-name"]
+                if xpi_config["name"] != xpi_name:
+                    continue
+                test_count.setdefault(xpi_name, 0)
+                test_count[xpi_name] += 1
+                task["attributes"] = dep.attributes.copy()
+                task["dependencies"] = {"build": dep.label}
+                task.setdefault("extra", {})["xpi-name"] = xpi_name
+                env = task.setdefault("worker", {}).setdefault("env", {})
+                run = task["run"]
+                if 'directory' in xpi_config:
+                    run['cwd'] = '{checkout}/%s' % xpi_config['directory']
+                else:
+                    run['cwd'] = '{checkout}'
+                run['command'] = run['command'].format(target=target)
+                task["label"] = "t-{}-{}".format(target, xpi_name)
+                task["treeherder"]["symbol"] = "T({}-1)".format(str(test_count[xpi_name]), xpi_name)
+                try:
+                    checkout_config['ssh_secret_name'] = config.graph_config["github_clone_secret"]
+                    artifact_prefix = "xpi/build"
+                except KeyError:
+                    artifact_prefix = "public/build"
+                env["ARTIFACT_PREFIX"] = artifact_prefix
+                yield task

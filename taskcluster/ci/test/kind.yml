@@ -33,4 +33,4 @@ job-template:
         # which ones are enabled per xpi. For example, linting, klaatu,
         # `yarn test`. For now, default to `yarn test`.
         command: >-
-            python3 /usr/local/bin/test.py
+            python3 /usr/local/bin/test.py {target}
