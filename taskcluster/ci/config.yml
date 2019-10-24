@@ -12,7 +12,6 @@ taskgraph:
     repositories:
         xpi:
             name: "XPI source"
-    cached-task-prefix: xpi.test-xpi-public
 
 workers:
     aliases:
