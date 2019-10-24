@@ -6,6 +6,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
 import os
+import subprocess
 
 import taskgraph
 from taskgraph.transforms.base import TransformSequence
@@ -50,6 +51,9 @@ def list_files(path):
 
 @transforms.add
 def build_cache(config, tasks):
+    repo_name = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).rstrip()
+    repo_name = repo_name.replace('.git', '').rstrip('/')
+    repo_name = repo_name.split('/')[-1]
     for task in tasks:
         if task.get('cache', True) and not taskgraph.fast:
             digest_data = []
@@ -73,7 +77,7 @@ def build_cache(config, tasks):
                 ))
             task.setdefault('attributes', {}).setdefault('cached_task', {})
             task['cache'] = {
-                'type': '{}.v2'.format(config.kind),
+                'type': '{}.v2'.format(repo_name),
                 'name': task['label'],
                 'digest-data': [h.hexdigest()],
             }
