@@ -9,6 +9,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 from copy import deepcopy
 import json
 import os
+import pprint
+import re
 import time
 from datetime import datetime
 
@@ -22,10 +24,36 @@ from voluptuous import ALLOW_EXTRA, Optional, Required, Schema, Any
 
 
 BASE_DIR = os.getcwd()
+# Allowed characters in indexes, plus `:`, which we replace with a `-`
+TEST_NAME_REGEX_STRING = r"""[^a-zA-Z0-9:_-]"""
+TEST_NAME_REGEX = re.compile(TEST_NAME_REGEX_STRING)
 
 
 def check_manifest(manifest_list):
     messages = []
+    xpi_names = {}
+    for manifest in manifest_list:
+        xpi_names.setdefault(manifest["name"], []).append(
+            manifest.get("directory", ".")
+        )
+        for test in manifest["tests"]:
+            if TEST_NAME_REGEX.search(test):
+                messages.append(
+                    "Illegal test name in {}: {} !\nIllegal char regex: {}".format(
+                        manifest["name"], test, TEST_NAME_REGEX_STRING
+                    )
+                )
+    for k, v in xpi_names.items():
+        if len(v) > 1:
+            messages.append(
+                "Duplicate xpi name {} in directories {}\nTry renaming your subdirectories".format(
+                    k, v
+                )
+            )
+    if messages:
+        raise Exception(
+            "Found the following issue with the package.json(s):\n{}".format(messages)
+        )
 
 
 @memoize
@@ -54,6 +82,7 @@ def get_manifest():
                 if target.startswith("test") or target.startswith("lint"):
                     manifest["tests"].append(target)
             manifest_list.append(ReadOnlyDict(manifest))
+    check_manifest(manifest_list[:])
     return tuple(manifest_list)
 
 

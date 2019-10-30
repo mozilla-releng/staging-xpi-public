@@ -11,7 +11,7 @@ from copy import deepcopy
 import os
 
 from taskgraph.transforms.base import TransformSequence
-from xpi_taskgraph.utils import get_manifest
+from xpi_taskgraph.xpi_manifest import get_manifest
 
 
 transforms = TransformSequence()
