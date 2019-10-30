@@ -14,7 +14,7 @@ from taskgraph.util.hash import hash_path
 
 transforms = TransformSequence()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.getcwd()
 
 # Directory names we ignore, anywhere in the tree
 # We won't recurse into these directories.
