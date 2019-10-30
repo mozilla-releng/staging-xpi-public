@@ -8,7 +8,7 @@
   },
   "applications": {
     "gecko": {
-      "id": "multipreffer@shield.mozilla.org",
+      "id": "multipreffer2@shield.mozilla.org",
       "strict_min_version": "66.0"
     }
   },
