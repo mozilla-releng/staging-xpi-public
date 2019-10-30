@@ -1,3 +1,3 @@
 # Test template repo
 
-based on multipreffer for now.
+Based on multipreffer for now.
