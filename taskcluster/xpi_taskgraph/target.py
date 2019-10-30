@@ -8,9 +8,7 @@ from taskgraph.target_tasks import _target_task as target_task
 from taskgraph.target_tasks import standard_filter
 
 # TODO add shipping-phase support
-PROMOTE_KINDS = (
-    "release-signing",
-)
+PROMOTE_KINDS = ("release-signing",)
 
 
 @target_task("promote_xpi")
@@ -18,7 +16,7 @@ def target_tasks_promote_xpi(full_task_graph, parameters, graph_config):
     """Select the set of tasks required for promoting a xpi."""
 
     def filter(task, parameters):
-        return task.attributes.get('shipping-phase') in ('build', 'promote')
+        return task.attributes.get("shipping-phase") in ("build", "promote")
 
     return [l for l, t in full_task_graph.tasks.iteritems() if filter(t, parameters)]
 
@@ -28,6 +26,6 @@ def target_tasks_build_xpi(full_task_graph, parameters, graph_config):
     """Select the set of tasks required for promoting a xpi."""
 
     def filter(task, parameters):
-        return task.attributes.get('shipping-phase') in ('build', )
+        return task.attributes.get("shipping-phase") in ("build",)
 
     return [l for l, t in full_task_graph.tasks.iteritems() if filter(t, parameters)]
