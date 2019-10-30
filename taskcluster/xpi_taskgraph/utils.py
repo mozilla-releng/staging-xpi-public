@@ -30,6 +30,10 @@ from voluptuous import (
 BASE_DIR = os.getcwd()
 
 
+def check_manifest(manifest_list):
+    messages = []
+
+
 @memoize
 def get_manifest():
     manifest_list = []
