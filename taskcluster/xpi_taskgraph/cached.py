@@ -18,15 +18,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # Directory names we ignore, anywhere in the tree
 # We won't recurse into these directories.
-IGNORE_DIRS = ('.git', 'node_modules')
+IGNORE_DIRS = (".git", "node_modules")
 
 # File extensions we ignore, anywhere in the tree
-IGNORE_EXTENSIONS = ('.pyc', '.swp')
+IGNORE_EXTENSIONS = (".pyc", ".swp")
 
-ADDITIONAL_FILES = (
-    '.taskcluster.yml',
-    'eslintrc.js',
-)
+ADDITIONAL_FILES = (".taskcluster.yml", "eslintrc.js")
 
 
 def list_files(path):
@@ -41,45 +38,42 @@ def list_files(path):
             if ext in IGNORE_EXTENSIONS:
                 continue
             files.append(
-                os.path.relpath(
-                    os.path.join(BASE_DIR, dir_name, file_),
-                    BASE_DIR,
-                )
+                os.path.relpath(os.path.join(BASE_DIR, dir_name, file_), BASE_DIR)
             )
     return set(files)
 
 
 @transforms.add
 def build_cache(config, tasks):
-    repo_name = subprocess.check_output(['git', 'remote', 'get-url', 'origin']).rstrip()
-    repo_name = repo_name.replace('.git', '').rstrip('/')
-    repo_name = repo_name.split('/')[-1]
+    repo_name = subprocess.check_output(["git", "remote", "get-url", "origin"]).rstrip()
+    repo_name = repo_name.replace(".git", "").rstrip("/")
+    repo_name = repo_name.split("/")[-1]
     for task in tasks:
-        if task.get('cache', True) and not taskgraph.fast:
+        if task.get("cache", True) and not taskgraph.fast:
             digest_data = []
-            directory = task.get('extra', {}).get('directory')
+            directory = task.get("extra", {}).get("directory")
             if directory:
                 directory = os.path.join(BASE_DIR, directory)
             else:
                 directory = BASE_DIR
             files = list_files(directory)
-            files.update(list_files(os.path.join(BASE_DIR, 'taskcluster')))
+            files.update(list_files(os.path.join(BASE_DIR, "taskcluster")))
             for path in ADDITIONAL_FILES:
                 if os.path.exists(path):
                     files.update({path})
             h = hashlib.sha256()
             for path in sorted(list(files)):
-                h.update('{} {}\n'.format(
-                    hash_path(
-                        os.path.realpath(os.path.join(BASE_DIR, path))
-                    ),
-                    path
-                ))
-            task.setdefault('attributes', {}).setdefault('cached_task', {})
-            task['cache'] = {
-                'type': '{}.v2'.format(repo_name),
-                'name': task['label'],
-                'digest-data': [h.hexdigest()],
+                h.update(
+                    "{} {}\n".format(
+                        hash_path(os.path.realpath(os.path.join(BASE_DIR, path))), path
+                    )
+                )
+            task.setdefault("attributes", {}).setdefault("cached_task", {})
+            cache_name = task["label"].replace(":", "-")
+            task["cache"] = {
+                "type": "{}.v2".format(repo_name),
+                "name": cache_name,
+                "digest-data": [h.hexdigest()],
             }
 
         yield task
