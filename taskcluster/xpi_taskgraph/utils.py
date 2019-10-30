@@ -18,13 +18,7 @@ from taskgraph.util.vcs import calculate_head_rev, get_repo_path, get_repository
 from taskgraph.util import yaml
 from taskgraph.util.memoize import memoize
 from taskgraph.util.readonlydict import ReadOnlyDict
-from voluptuous import (
-    ALLOW_EXTRA,
-    Optional,
-    Required,
-    Schema,
-    Any,
-)
+from voluptuous import ALLOW_EXTRA, Optional, Required, Schema, Any
 
 
 BASE_DIR = os.getcwd()
@@ -39,26 +33,26 @@ def get_manifest():
     manifest_list = []
     for dir_name, subdir_list, file_list in os.walk(BASE_DIR):
         for dir_ in subdir_list:
-            if dir_ in ('.git', 'node_modules'):
+            if dir_ in (".git", "node_modules"):
                 subdir_list.remove(dir_)
                 continue
-        if 'package.json' in file_list:
-            manifest = {'name': os.path.basename(dir_name), 'tests': []}
-            if 'yarn.lock' in file_list:
-                manifest['install-type'] = 'yarn'
-            elif 'package-lock.json' in file_list:
-                manifest['install-type'] = 'npm'
+        if "package.json" in file_list:
+            manifest = {"name": os.path.basename(dir_name), "tests": []}
+            if "yarn.lock" in file_list:
+                manifest["install-type"] = "yarn"
+            elif "package-lock.json" in file_list:
+                manifest["install-type"] = "npm"
             else:
                 raise Exception(
                     "Missing yarn.lock or package-lock.json in {}!".format(dir_name)
                 )
             if dir_name != BASE_DIR:
-                manifest['directory'] = dir_name.replace("{}/".format(BASE_DIR), "")
-            with open(os.path.join(dir_name, 'package.json')) as fh:
+                manifest["directory"] = dir_name.replace("{}/".format(BASE_DIR), "")
+            with open(os.path.join(dir_name, "package.json")) as fh:
                 package_json = json.load(fh)
-            for target in package_json.get('scripts', {}):
+            for target in package_json.get("scripts", {}):
                 if target.startswith("test") or target.startswith("lint"):
-                    manifest['tests'].append(target)
+                    manifest["tests"].append(target)
             manifest_list.append(ReadOnlyDict(manifest))
     return tuple(manifest_list)
 

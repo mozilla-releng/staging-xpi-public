@@ -25,10 +25,10 @@ def tasks_from_manifest(config, jobs):
             task = deepcopy(job)
             env = task.setdefault("worker", {}).setdefault("env", {})
             run = task.setdefault("run", {})
-            if 'directory' in xpi_config:
-                run['cwd'] = '{checkout}/%s' % xpi_config['directory']
+            if "directory" in xpi_config:
+                run["cwd"] = "{checkout}/%s" % xpi_config["directory"]
                 extra = task.setdefault("extra", {})
-                extra['directory'] = xpi_config['directory']
+                extra["directory"] = xpi_config["directory"]
             task["label"] = "build-{}".format(xpi_config["name"])
             task["treeherder"]["symbol"] = "B({})".format(
                 xpi_config.get("treeherder-symbol", xpi_config["name"])
@@ -36,17 +36,21 @@ def tasks_from_manifest(config, jobs):
             env["XPI_NAME"] = xpi_config["name"]
             task.setdefault("extra", {})["xpi-name"] = xpi_config["name"]
             try:
-                checkout_config['ssh_secret_name'] = config.graph_config["github_clone_secret"]
+                checkout_config["ssh_secret_name"] = config.graph_config[
+                    "github_clone_secret"
+                ]
                 artifact_prefix = "xpi/build"
             except KeyError:
                 artifact_prefix = "public/build"
             env["ARTIFACT_PREFIX"] = artifact_prefix
             artifacts = task["worker"].setdefault("artifacts", [])
-            artifacts.append({
-                "type": "directory",
-                "name": artifact_prefix,
-                "path": "/builds/worker/artifacts",
-            })
+            artifacts.append(
+                {
+                    "type": "directory",
+                    "name": artifact_prefix,
+                    "path": "/builds/worker/artifacts",
+                }
+            )
             if xpi_config.get("install-type"):
                 env["XPI_INSTALL_TYPE"] = xpi_config["install-type"]
 

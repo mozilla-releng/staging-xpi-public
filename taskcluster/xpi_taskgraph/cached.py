@@ -14,7 +14,7 @@ from taskgraph.util.hash import hash_path
 
 transforms = TransformSequence()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Directory names we ignore, anywhere in the tree
 # We won't recurse into these directories.
@@ -48,14 +48,12 @@ def build_cache(config, tasks):
     repo_name = subprocess.check_output(["git", "remote", "get-url", "origin"]).rstrip()
     repo_name = repo_name.replace(".git", "").rstrip("/")
     repo_name = repo_name.split("/")[-1]
+
     for task in tasks:
         if task.get("cache", True) and not taskgraph.fast:
             digest_data = []
-            directory = task.get("extra", {}).get("directory")
-            if directory:
-                directory = os.path.join(BASE_DIR, directory)
-            else:
-                directory = BASE_DIR
+            directory = task.get("extra", {}).get("directory", BASE_DIR)
+            directory = os.path.join(BASE_DIR, directory)
             files = list_files(directory)
             files.update(list_files(os.path.join(BASE_DIR, "taskcluster")))
             for path in ADDITIONAL_FILES:
