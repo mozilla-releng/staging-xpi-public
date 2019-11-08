@@ -16,7 +16,7 @@ taskgraph:
 workers:
     aliases:
         b-linux:
-            provisioner: xpi-{$level}
+            provisioner: xpi-{level}
             implementation: docker-worker
             os: linux
             worker-type: 'b-linux'
