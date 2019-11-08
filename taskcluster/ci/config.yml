@@ -16,10 +16,10 @@ taskgraph:
 workers:
     aliases:
         b-linux:
-            provisioner: aws-provisioner-v1
+            provisioner: xpi-{$level}
             implementation: docker-worker
             os: linux
-            worker-type: 'xpi-{level}-b-linux'
+            worker-type: 'b-linux'
 
 # Uncomment if this is a private repo
 # github_clone_secret: project/xpi/xpi-github-clone-ssh
