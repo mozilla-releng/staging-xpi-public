@@ -13,11 +13,6 @@ transforms:
 
 job-defaults:
     description: Test XPI
-    treeherder:
-        kind: test
-        symbol: T
-        tier: 2
-        platform: linux64/opt
     worker-type: b-linux
     worker:
         max-run-time: 7200

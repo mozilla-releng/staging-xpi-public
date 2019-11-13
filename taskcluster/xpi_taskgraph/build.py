@@ -30,9 +30,6 @@ def tasks_from_manifest(config, jobs):
                 extra = task.setdefault("extra", {})
                 extra["directory"] = xpi_config["directory"]
             task["label"] = "build-{}".format(xpi_config["name"])
-            task["treeherder"]["symbol"] = "B({})".format(
-                xpi_config.get("treeherder-symbol", xpi_config["name"])
-            )
             env["XPI_NAME"] = xpi_config["name"]
             task.setdefault("extra", {})["xpi-name"] = xpi_config["name"]
             try:

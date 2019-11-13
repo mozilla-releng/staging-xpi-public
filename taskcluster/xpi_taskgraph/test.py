@@ -41,9 +41,6 @@ def test_tasks_from_manifest(config, jobs):
                     run["cwd"] = "{checkout}"
                 run["command"] = run["command"].format(target=target)
                 task["label"] = "t-{}-{}".format(target, xpi_name)
-                task["treeherder"]["symbol"] = "T({}-{})".format(
-                    str(test_count[xpi_name]), xpi_name
-                )
                 try:
                     checkout_config["ssh_secret_name"] = config.graph_config[
                         "github_clone_secret"

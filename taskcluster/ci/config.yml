@@ -1,9 +1,5 @@
 ---
 trust-domain: xpi
-treeherder:
-    group-names:
-        'B': 'Builds'
-        'T': 'Tests'
 
 task-priority: lowest
 
