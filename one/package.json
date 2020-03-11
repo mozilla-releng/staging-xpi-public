@@ -49,7 +49,6 @@
     "prewatch": "npm run bundle-utils",
     "sign": "echo 'TBD, see: https://bugzilla.mozilla.org/show_bug.cgi?id=1407757'",
     "start": "web-ext run --no-reload",
-    "test": "echo test",
     "watch": "web-ext run"
   }
 }
