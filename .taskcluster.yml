@@ -10,8 +10,10 @@ tasks:
               revision: b34543ca2f42771117fa9da33c31994913587636
           template:
               repo: https://github.com/escapewindow/xpi-template
-              branch: master
+              branch: shared-tc-dir
           trustDomain: xpi
+          # XXX Uncomment if this is a private repo
+          # githubCloneSecret: project/xpi/xpi-github-clone-ssh
       in:
           $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
@@ -187,6 +189,7 @@ tasks:
                                     TASKGRAPH_REPOSITORY_TYPE: hg
                                     REPOSITORIES: {$json: {xpi: "XPI Manifest", taskgraph: "Taskgraph", template: "XPI Template"}}
                                     HG_STORE_PATH: /builds/worker/checkouts/hg-store
+                                    GITHUB_CLONE_SECRET: '${githubCloneSecret}'
                                   - $if: 'tasks_for in ["github-pull-request"]'
                                     then:
                                         XPI_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
@@ -222,11 +225,13 @@ tasks:
                                     then: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
                                         cd /builds/worker/checkouts/src &&
+                                        rm -rf taskcluster &&
                                         ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph action-callback
                                     else: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
+                                        rm -rf taskcluster &&
                                         ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph decision
