@@ -9,6 +9,9 @@ tasks:
               branch: taskgraph
               revision: b34543ca2f42771117fa9da33c31994913587636
           template:
+              # XXX uncomment to merge
+              # repo: https://github.com/mozilla-releng/xpi-template
+              # branch: master
               repo: https://github.com/escapewindow/xpi-template
               branch: shared-tc-dir
           trustDomain: xpi
@@ -226,16 +229,14 @@ tasks:
                                     then: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
                                         cd /builds/worker/checkouts/src &&
-                                        rm -rf taskcluster &&
-                                        ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph action-callback
+                                        --root=/builds/worker/checkouts/taskgraph/taskcluster/ci
                                     else: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
-                                        rm -rf taskcluster &&
-                                        ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph decision
+                                        --root=/builds/worker/checkouts/taskgraph/taskcluster/ci
                                         --pushlog-id='0'
                                         --pushdate='0'
                                         --project='${project}'
