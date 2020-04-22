@@ -18,6 +18,8 @@ tasks:
           # XXX for private repos, uncomment this line, and comment out the next
           # githubCloneSecret: project/xpi/xpi-github-clone-ssh
           githubCloneSecret: ""
+          # XXX use "privileged" or "system" to enable signing
+          xpiSigningType: "privileged"
       in:
           $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
@@ -182,6 +184,7 @@ tasks:
                                     XPI_HEAD_REF: '${head_branch}'
                                     XPI_HEAD_REV: '${head_sha}'
                                     XPI_REPOSITORY_TYPE: git
+                                    XPI_SIGNING_TYPE: '${xpiSigningType}'
                                     TEMPLATE_BASE_REPOSITORY: '${template.repo}'
                                     TEMPLATE_HEAD_REPOSITORY: '${template.repo}'
                                     TEMPLATE_HEAD_REV: '${template.branch}'
@@ -229,14 +232,16 @@ tasks:
                                     then: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
                                         cd /builds/worker/checkouts/src &&
+                                        rm -rf taskcluster &&
+                                        ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph action-callback
-                                        --root=/builds/worker/checkouts/taskgraph/taskcluster/ci
                                     else: >
                                         PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
+                                        rm -rf taskcluster &&
+                                        ln -s /builds/worker/checkouts/template/taskcluster taskcluster &&
                                         ln -s /builds/worker/artifacts artifacts &&
                                         ~/.local/bin/taskgraph decision
-                                        --root=/builds/worker/checkouts/taskgraph/taskcluster/ci
                                         --pushlog-id='0'
                                         --pushdate='0'
                                         --project='${project}'
