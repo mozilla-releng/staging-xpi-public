@@ -38,7 +38,9 @@
     "url": "https://github.com/nhnt11/multipreffer"
   },
   "scripts": {
-    "build": "web-ext build",
+    "build": "npm-run-all build:extension build:finalize",
+    "build:extension": "web-ext build",
+    "build:finalize": "mv web-ext-artifacts/*.zip multipreffer.xpi",
     "bundle-utils": "copyStudyUtils src/privileged",
     "eslint": "eslint . --ext jsm,js,json",
     "lint": "npm-run-all lint:*",
