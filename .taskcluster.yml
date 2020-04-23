@@ -19,7 +19,7 @@ tasks:
           # githubCloneSecret: project/xpi/xpi-github-clone-ssh
           githubCloneSecret: ""
           # XXX use "privileged" or "system" to enable signing
-          xpiSigningType: "unknown"
+          xpiSigningType: "privileged"
       in:
           $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
