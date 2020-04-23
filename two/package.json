@@ -1,5 +1,5 @@
 {
-  "name": "Multipreffer",
+  "name": "Multipreffer-two",
   "description": "Flippa lotta prefs",
   "version": "2.0.0",
   "author": "Mozilla",
@@ -40,7 +40,7 @@
   "scripts": {
     "build": "npm-run-all build:extension build:finalize",
     "build:extension": "web-ext build",
-    "build:finalize": "mv dist/*.zip multipreffer.xpi",
+    "build:finalize": "mv dist/*.zip multipreffer-two.xpi",
     "bundle-utils": "copyStudyUtils src/privileged",
     "eslint": "eslint . --ext jsm,js,json",
     "lint": "npm-run-all lint:*",
