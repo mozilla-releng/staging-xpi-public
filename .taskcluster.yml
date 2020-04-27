@@ -9,6 +9,9 @@ tasks:
               branch: taskgraph
               revision: c78d65237c6ed064b9cbb3cd063b22e9e052a06a
           template:
+              # XXX uncomment to merge
+              # repo: https://github.com/mozilla-releng/xpi-template
+              # branch: master
               repo: https://github.com/escapewindow/xpi-template
               branch: shared-tc-dir
           trustDomain: xpi
