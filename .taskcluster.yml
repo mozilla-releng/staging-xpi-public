@@ -5,22 +5,20 @@ policy:
     pullRequests: collaborators
 tasks:
     - $let:
-          # Set to `true` for private repos
+          # XXX Set to `true` for private repos
           privateRepo: false
-          # XXX use "privileged" or "system" to enable signing
+          # XXX use "privileged" or "system" to enable dep-signing on push / PR.
+          #     This only works for public repos for now. Release builds off
+          #     shipit will get signing for both public and private repos.
           xpiSigningType: "privileged"
-          # The settings below don't need changing
+          # The below doesn't need changing on initial repo setup
           taskgraph:
               branch: taskgraph
               revision: 7dde9ce7740068d7b73218976343a28fc99be847
           template:
-              #XXX uncomment to merge
-              #repo: https://github.com/mozilla-extensions/xpi-template
-              #branch: master
               repo: https://github.com/escapewindow/xpi-template
               branch: private-ci
           trustDomain: xpi
-          xpiSshSecretName: project/xpi/xpi-github-clone-ssh
       in:
           $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
@@ -143,8 +141,9 @@ tasks:
                                 then:
                                     source: '${repoUrl}/raw/${head_sha}/.taskcluster.yml'
                                 else:
-
-                                    source: 'https://github.com:${repoUrl[15:-4]}/raw/${head_sha}/.taskcluster.yml'
+                                    # XXX revisit after https://github.com/taskcluster/taskcluster/pull/2812
+                                    #     is deployed to the firefoxci cluster.
+                                    source: 'https://github.com/${repoUrl[15:-4]}/raw/${head_sha}/.taskcluster.yml'
                               - $if: 'tasks_for in ["github-push", "github-pull-request"]'
                                 then:
                                     name: "Decision Task"
@@ -236,7 +235,7 @@ tasks:
                                     HG_STORE_PATH: /builds/worker/checkouts/hg-store
                                   - $if: 'privateRepo'
                                     then:
-                                        XPI_SSH_SECRET_NAME: '${xpiSshSecretName}'
+                                        XPI_SSH_SECRET_NAME: project/xpi/xpi-github-clone-ssh
                                   - $if: 'tasks_for in ["github-pull-request"]'
                                     then:
                                         XPI_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
