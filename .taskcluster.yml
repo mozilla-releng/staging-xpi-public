@@ -5,6 +5,11 @@ policy:
     pullRequests: collaborators
 tasks:
     - $let:
+          # Set to `true` for private repos
+          privateRepo: false
+          # XXX use "privileged" or "system" to enable signing
+          xpiSigningType: "privileged"
+          # The settings below don't need changing
           taskgraph:
               branch: taskgraph
               revision: 7dde9ce7740068d7b73218976343a28fc99be847
@@ -15,11 +20,7 @@ tasks:
               repo: https://github.com/escapewindow/xpi-template
               branch: private-ci
           trustDomain: xpi
-          # XXX for private repos, uncomment this line, and comment out the next
-          #xpiSshSecretName: project/xpi/xpi-github-clone-ssh
-          xpiSshSecretName: ""
-          # XXX use "privileged" or "system" to enable signing
-          xpiSigningType: "privileged"
+          xpiSshSecretName: project/xpi/xpi-github-clone-ssh
       in:
           $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
@@ -79,7 +80,7 @@ tasks:
                               # Trim https://github.com/
                               then: '${repository.url[19:]}'
                   baseRepoUrl:
-                      $if: '!xpiSshSecretName'  # public repo
+                      $if: '!privateRepo'  # public repo
                       then:
                           $if: 'tasks_for == "github-push"'
                           then: '${event.repository.html_url}'
@@ -99,7 +100,7 @@ tasks:
                                   $if: 'tasks_for in ["cron", "action"]'
                                   then: '${repository.url}'
                   repoUrl:
-                      $if: '!xpiSshSecretName'  # public repo
+                      $if: '!privateRepo'  # public repo
                       then:
                           $if: 'tasks_for == "github-push"'
                           then: '${event.repository.html_url}'
@@ -138,12 +139,12 @@ tasks:
                       metadata:
                           $merge:
                               - owner: "${ownerEmail}"
-                              - $if: '!xpiSshSecretName'  # public repo
+                              - $if: '!privateRepo'  # public repo
                                 then:
                                     source: '${repoUrl}/raw/${head_sha}/.taskcluster.yml'
                                 else:
 
-                                    source: 'https://github.com/${repoUrl[15:-4]}/raw/${head_sha}/.taskcluster.yml'
+                                    source: 'https://github.com:${repoUrl[15:-4]}/raw/${head_sha}/.taskcluster.yml'
                               - $if: 'tasks_for in ["github-push", "github-pull-request"]'
                                 then:
                                     name: "Decision Task"
@@ -233,7 +234,9 @@ tasks:
                                     TASKGRAPH_REPOSITORY_TYPE: hg
                                     REPOSITORIES: {$json: {xpi: "XPI Manifest", taskgraph: "Taskgraph", template: "XPI Template"}}
                                     HG_STORE_PATH: /builds/worker/checkouts/hg-store
-                                    XPI_SSH_SECRET_NAME: '${xpiSshSecretName}'
+                                  - $if: 'privateRepo'
+                                    then:
+                                        XPI_SSH_SECRET_NAME: '${xpiSshSecretName}'
                                   - $if: 'tasks_for in ["github-pull-request"]'
                                     then:
                                         XPI_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
