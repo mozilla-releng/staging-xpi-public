@@ -7,7 +7,7 @@ tasks:
     - $let:
           taskgraph:
               branch: taskgraph-try
-              revision: c37ebf662dea08519de66c2998bd231acd8e08f9
+              revision: 2f7a0ffc6d2cd39ea792f542a4b98b6d29bb0551
           template:
               repo: https://github.com/escapewindow/xpi-template
               branch: debug-normandy
