@@ -6,8 +6,8 @@ policy:
 tasks:
     - $let:
           taskgraph:
-              branch: taskgraph
-              revision: c78d65237c6ed064b9cbb3cd063b22e9e052a06a
+              branch: taskgraph-try
+              revision: c37ebf662dea08519de66c2998bd231acd8e08f9
           template:
               repo: https://github.com/escapewindow/xpi-template
               branch: debug-normandy
